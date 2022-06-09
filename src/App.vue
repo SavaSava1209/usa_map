@@ -27,7 +27,7 @@
         state: '',
         states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',  'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah', 'Vermont',  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'American Samoa',  'Guam','Northern Mariana Islands', 'Puerto Rico', 'Virgin Islands'],
         filteredStates: [],
-        location: { lat: 39, lng: -144 }
+        location: { lat: 39, lng: -119 }
 
       }
     },
@@ -47,11 +47,10 @@
         this.filteredStates = []
       },
       onClick() {
-
         fetch(`http://localhost:3010/${this.state}`)
         .then(resp => resp.json())
-        .then(data => {
-          console.log('hello')    
+        .then(data => {  
+          this.location = data
           this.initMap()
           this.setMarker(data)
         })
@@ -62,17 +61,17 @@
           center: this.location,
           zoom: 4
         })
-      }
-    },
-    setMarker(data) {
-      const markers = new google.maps.Marker({
-        poition: data,
-        map:this.map,
-        label: {
-          text: Label, 
-          color: 'red'
-        }
-      })
+      },
+      setMarker(data) {
+        const marker = new window.google.maps.Marker({
+          position: data,
+          map: this.map,
+          label: {
+            text: this.state,
+          }
+        })
+
+      },
     },
     mounted() {
       this.initMap()

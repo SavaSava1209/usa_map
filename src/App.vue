@@ -27,7 +27,7 @@
         state: '',
         states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',  'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah', 'Vermont',  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'American Samoa',  'Guam','Northern Mariana Islands', 'Puerto Rico', 'Virgin Islands'],
         filteredStates: [],
-        location: { lat: 39, lng: -119 }
+        location: { lat: 38.500000, lng: -98 }
 
       }
     },
@@ -50,9 +50,9 @@
         fetch(`http://localhost:3010/${this.state}`)
         .then(resp => resp.json())
         .then(data => {  
-          this.location = data
+          this.location = {lat: Number(data.lat), lng: Number(data.lng)}
           this.initMap()
-          this.setMarker(data)
+          this.setMarker()
         })
         .catch(console.log)
       },
@@ -64,7 +64,7 @@
       },
       setMarker(data) {
         const marker = new window.google.maps.Marker({
-          position: data,
+          position: this.location,
           map: this.map,
           label: {
             text: this.state,

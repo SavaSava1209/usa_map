@@ -27,8 +27,8 @@
         state: '',
         states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',  'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah', 'Vermont',  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'American Samoa',  'Guam','Northern Mariana Islands', 'Puerto Rico', 'Virgin Islands'],
         filteredStates: [],
-        location: { lat: 38.500000, lng: -98 }
-
+        location: { lat: 38.500000, lng: -98 },
+        
       }
     },
     
@@ -50,9 +50,13 @@
         fetch(`http://localhost:3010/${this.state}`)
         .then(resp => resp.json())
         .then(data => {  
-          this.location = {lat: Number(data.lat), lng: Number(data.lng)}
+          console.log(data)
+          this.location = {lat: Number(data[0].latitude), lng: Number(data[0].longtitude)}
+          this.path = this.convertToArray(data[0].state_path)
+          console.log(this.path)
           this.initMap()
           this.setMarker()
+          this.state = ''
         })
         .catch(console.log)
       },
@@ -62,16 +66,30 @@
           zoom: 4
         })
       },
-      setMarker(data) {
-        const marker = new window.google.maps.Marker({
-          position: this.location,
+      setMarker() {
+        const marker = new window.google.maps.Polygon({
+          path: this.path,
           map: this.map,
-          label: {
-            text: this.state,
-          }
+          strokeColor: '#FF0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 3,
+          fillColor: '#FF0000',
+          fillOpacity: 0.35
         })
 
       },
+      convertToArray(arr) {
+        const result = []
+        let i = 0
+        while ( i < arr.length) {
+          let obj = {}
+          obj['lat'] = arr[i][1]
+          obj['lng'] = arr[i][0]
+          result.push(obj)
+          i++
+        }
+        return result
+      }
     },
     mounted() {
       this.initMap()

@@ -12,7 +12,6 @@
           </li>
         </ul>
       </div>
-      
     </div>
     <div id='map' ref='map'></div>
   </div>
@@ -63,8 +62,7 @@
              } else {
                 this.location = {lat: borderArray[0][0][0][1], lng: borderArray[0][0][0][0]}
                 this.path = this.convertToObjMultipleArray(borderArray)
-             }
-              
+             }              
               this.initMap()
               this.setMarker()
               this.state = ''  
@@ -141,23 +139,42 @@
 
  .searchBox {
   margin: 10px;
+  position: relative;
 }
+
 input {
-  width:  60%;
-  padding:  5px;
+  width: 60%;
+  padding:  5px; 
+  border-radius: 5px; 
 }
 
 button {
+  width: 10%;
   margin: 0 0 0 0;
   padding: 5px;
+  border-radius: 5px; 
 }
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  width: 40%;
+  left: 15%;
+  border-radius: 5px;
+}
+
 li {
-  width: 60%;
-  list-style: none;
+  width: 100%;
+  text-align: left;
+  padding-left: 5px;
 }
+
 li:hover {
   position: cursor;
-  background-color: grey ;
+  background-color: lightgray;
+  border-radius: 5px;
 }
 
 </style>

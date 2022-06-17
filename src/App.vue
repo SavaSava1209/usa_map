@@ -59,11 +59,10 @@
             let borderArray = data.records[0].fields.st_asgeojson.coordinates
              if (borderArray.length === 1) {
                 this.location = { lat: borderArray[0][0][1], lng: borderArray[0][0][0] }
-                this.path = this.convertToObjArray(borderArray[0])
              } else {
-                this.location = {lat: borderArray[0][0][0][1], lng: borderArray[0][0][0][0]}            
-                this.path = this.convertToObjMultipleArray(borderArray)
+                this.location = {lat: borderArray[0][0][0][1], lng: borderArray[0][0][0][0]}
              }
+              this.path = this.convertToObjMultipleArray(borderArray)
               this.initMap()
               this.setMarker()
               this.state = ''  

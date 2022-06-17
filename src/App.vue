@@ -3,7 +3,7 @@
   <div class='container'>
     <h1 class="header">USA States</h1>
     <div class="searchBox">
-      <input class="searchField" type='text' autocomplete='off' name='state' v-model='state' placeholder="enter a state" @input='filterStates' />
+      <input class="searchField" type='text' autocomplete='off' name='state' v-model='state' placeholder="Enter a state" @input='filterStates' />
       <button type='button' @click="onClick()">Find</button>
       <div v-if="filteredStates">
         <ul>
@@ -25,19 +25,22 @@
       return {
         map: null,
         state: '',
-        states: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',  'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah', 'Vermont',  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'American Samoa',  'Guam','Northern Mariana Islands', 'Puerto Rico', 'Virgin Islands'],
         filteredStates: [],
         location: { lat: 38.500000, lng: -98 },
-        
       }
     },
     
     methods: {
       filterStates() {
         if (this.state.length > 0) {
-          this.filteredStates = this.states.filter(state => {
-          return state.toLowerCase().startsWith(this.state.toLowerCase())
+          fetch(`https://usa-state-map.herokuapp.com/filterState/${this.state}`)
+          .then(resp => resp.json())
+          .then(stateArr => {
+            let states = []
+            stateArr.forEach(state => states.push(state.state))
+            this.filteredStates = states
           })
+          .catch(console.log)
         } else {
           this.filteredStates = []
         }        
@@ -47,17 +50,25 @@
         this.filteredStates = []
       },
       onClick() {
-        fetch(`http://localhost:3010/${this.state}`)
+        fetch(`https://public.opendatasoft.com/api/records/1.0/search/?dataset=us-state-boundaries&q=&facet=name&refine.name=${this.state.charAt(0).toUpperCase()+this.state.slice(1)}`)
         .then(resp => resp.json())
-        .then(data => {  
-          console.log(data)
-          this.location = {lat: Number(data[0].latitude), lng: Number(data[0].longtitude)}
-          this.path = this.convertToArray(data[0].state_path)
-          console.log(this.path)
-          this.initMap()
-          this.setMarker()
-          this.state = ''
-        })
+        .then(data => {
+          if (data.nhits === 0) {
+            alert("State is not found")
+          } else {
+            let borderArray = data.records[0].fields.st_asgeojson.coordinates
+             if (borderArray.length === 1) {
+                this.location = { lat: borderArray[0][0][1], lng: borderArray[0][0][0] }
+                this.path = this.convertToObjArray(borderArray[0])
+             } else {
+                this.location = {lat: borderArray[0][0][0][1], lng: borderArray[0][0][0][0]}            
+                this.path = this.convertToObjMultipleArray(borderArray)
+             }
+              this.initMap()
+              this.setMarker()
+              this.state = ''  
+           }         
+        })        
         .catch(console.log)
       },
       initMap() {
@@ -68,7 +79,7 @@
       },
       setMarker() {
         const marker = new window.google.maps.Polygon({
-          path: this.path,
+          paths: this.path,
           map: this.map,
           strokeColor: '#FF0000',
           strokeOpacity: 0.8,
@@ -78,18 +89,26 @@
         })
 
       },
-      convertToArray(arr) {
-        const result = []
+      convertToObjArray(arr) {
         let i = 0
-        while ( i < arr.length) {
+        const result = []
+        while (i < arr.length) {
           let obj = {}
           obj['lat'] = arr[i][1]
-          obj['lng'] = arr[i][0]
-          result.push(obj)
+          obj['lng'] = arr[i][0]         
           i++
+          result.push(obj)
         }
         return result
-      }
+      },
+      convertToObjMultipleArray(arr){
+        const result = []
+        for (let i=0; i<arr.length; i++) {
+          let temp = this.convertToObjArray(arr[i][0])
+          result.push(temp)
+        }
+        return result
+      },
     },
     mounted() {
       this.initMap()

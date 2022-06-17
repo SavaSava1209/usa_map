@@ -14,4 +14,5 @@ export default defineConfig({
   build: {
     outDir: '../usa_states_map/docs'
   },
+  base: '/usa_map/'
 })
